@@ -32,9 +32,11 @@ class NBeats_pkg_v2(Base_pkg):
     @classmethod
     def get_datamodule_cls(cls):
         """Get the underlying DataModule class."""
-        from pytorch_forecasting.data.data_module import TslibDataModule
+        from pytorch_forecasting.data.data_module import (
+            EncoderDecoderTimeSeriesDataModule,
+        )
 
-        return TslibDataModule
+        return EncoderDecoderTimeSeriesDataModule
 
     @classmethod
     def get_test_train_params(cls):
@@ -85,8 +87,10 @@ class NBeats_pkg_v2(Base_pkg):
         ]
 
         default_dm_cfg = {
-            "context_length": 8,
-            "prediction_length": 3,
+            "max_encoder_length": 8,
+            "max_prediction_length": 3,
+            "min_encoder_length": 8,
+            "min_prediction_length": 3,
             "add_relative_time_idx": False,
         }
 

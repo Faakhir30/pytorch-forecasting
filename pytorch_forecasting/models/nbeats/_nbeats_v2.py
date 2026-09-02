@@ -18,15 +18,63 @@ from pytorch_forecasting.models.nbeats._nbeats_adapter_v2 import NBeatsAdapterV2
 
 class NBeats(NBeatsAdapterV2):
     """
-    N-BEATS for pytorch-forecasting v2.
+    N-BEATS for pytorch-forecasting v2 (univariate time series forecasting).
 
-    Based on
-    `N-BEATS: Neural basis expansion analysis for interpretable time series
-    forecasting <http://arxiv.org/abs/1905.10437>`_.
+    Based on the article `N-BEATS: Neural basis expansion analysis for
+    interpretable time series forecasting
+    <http://arxiv.org/abs/1905.10437>`_. The network has (if used as
+    ensemble) outperformed all other methods including ensembles of
+    traditional statistical methods in the M4 competition. The M4
+    competition is arguably the most important benchmark for univariate
+    time series forecasting.
 
-    Network construction matches the v1 ``NBeats`` class; ``context_length`` /
-    ``prediction_length`` come from datamodule ``metadata`` instead of
-    ``from_dataset``.
+    Parameters
+    ----------
+    loss : Metric
+        Loss metric to optimize during training.
+    stack_types : list of str, optional
+        One of "generic", "seasonality", or "trend". A list of strings
+        of length equal to the number of stacks. Default is ["trend",
+        "seasonality"] for interpretable mode.
+    num_blocks : list of int, optional
+        The number of blocks per stack. List length equal to number of
+        stacks. Default is [3, 3].
+    num_block_layers : list of int, optional
+        Number of fully connected layers with ReLU activation per block.
+        List length equal to number of stacks. Default is [3, 3].
+    widths : list of int, optional
+        Widths of fully connected layers with ReLU activation. List
+        length equal to number of stacks. Default is [32, 512].
+    sharing : list of bool, optional
+        Whether weights are shared across blocks within a stack. List
+        length equal to number of stacks. Default is [True, True].
+    expansion_coefficient_lengths : list of int, optional
+        If type is "generic", length of expansion coefficients; if
+        "trend", degree of polynomial; if "seasonality", minimum period.
+        List length equal to number of stacks. Default is [3, 7].
+    dropout : float, optional
+        Dropout probability applied in the network. Helps prevent
+        overfitting. Default is 0.1.
+    backcast_loss_ratio : float, optional
+        Weight of backcast loss relative to forecast loss. 1.0 gives
+        equal weight; 0.0 means no backcast loss. Default is 0.0.
+    logging_metrics : list of nn.Module, optional
+        List of metrics logged during training. Defaults to
+        [SMAPE(), MAE(), RMSE(), MAPE()].
+    optimizer : Optimizer or str, optional
+        Optimizer to use for training. Can be a torch.optim.Optimizer
+        class or string like "adam". Default is "adam".
+    optimizer_params : dict, optional
+        Additional parameters for the optimizer. Default is None.
+    lr_scheduler : str, optional
+        Learning rate scheduler type. Default is None.
+    lr_scheduler_params : dict, optional
+        Additional parameters for the learning rate scheduler. Default
+        is None.
+    metadata : dict, optional
+        Additional metadata for the model. Default is None.
+    **kwargs
+        Additional arguments forwarded to :py:class:`~NBeatsAdapterV2`.
     """
 
     @classmethod
